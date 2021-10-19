@@ -23,6 +23,8 @@ import type { Unsubscriber } from "svelte/store";
 
 const logger = new Logger("ConferencePeer");
 
+type ProducerType = "micProducer" | "camProducer" | "shareProducer";
+
 export class ConferencePeer extends Peer {
   client: RoomClient;
   browserDevice: Device;
@@ -158,7 +160,7 @@ export class ConferencePeer extends Peer {
     }
 
     this.audioTrackUnsub = audioTrack.subscribe(async (track) => {
-      await this.closeMicProducer();
+      await this.closeProducer("micProducer");
 
       await this.openMicProducer(track);
     });
@@ -176,10 +178,17 @@ export class ConferencePeer extends Peer {
       },
     });
 
-    producer.on("transportclose", () => (client.micProducer = null));
+    producer.on("transportclose", () => {
+      client.micProducerState.set("closed");
+      client.micProducer = null;
+    });
     producer.on("trackended", () => {
-      // TODO: notify
-      // "Microphone disconnected!",
+      logger.warn("microphone disconnected");
+      client.micProducerState.set("closed");
+      client.emit("notify", {
+        type: "error",
+        text: "Microphone disconnected",
+      });
 
       this.disableMic().catch(() => {});
     });
@@ -196,33 +205,11 @@ export class ConferencePeer extends Peer {
     });
   }
 
-  async closeMicProducer() {
-    const client = this.client;
-
-    if (client.micProducer) {
-      const producerId = client.micProducer.id;
-
-      client.micProducer.close();
-      client.micProducerState.set("closed");
-
-      try {
-        await this.request("closeProducer", { producerId });
-      } catch (error) {
-        logger.warn("error closing server-side mic producer: %o", error);
-      }
-
-      client.micProducer = null;
-      client.emit("producer-removed", producerId);
-    } else {
-      logger.warn("can't close micProducer");
-    }
-  }
-
   async disableMic() {
     this.audioTrackUnsub?.();
     this.audioTrackUnsub = null;
 
-    await this.closeMicProducer();
+    await this.closeProducer("micProducer");
   }
 
   async enableCam() {
@@ -233,9 +220,20 @@ export class ConferencePeer extends Peer {
     }
 
     this.videoTrackUnsub = videoTrack.subscribe(async (track) => {
-      await this.closeCamProducer();
+      await this.closeProducer("camProducer");
 
-      await this.openCamProducer(track);
+      try {
+        await this.openCamProducer(track);
+      } catch (err) {
+        logger.error("enableCam() | failed: %o", err);
+
+        this.client.emit("notify", {
+          type: "error",
+          text: `Error enabling webcam: ${err}`,
+        });
+
+        // if (track) track.stop()
+      }
     });
   }
 
@@ -252,15 +250,19 @@ export class ConferencePeer extends Peer {
       // codec: codec
     });
 
-    producer.on("transportclose", () => (client.camProducer = null));
+    producer.on("transportclose", () => {
+      client.camProducerState.set("closed");
+      client.camProducer = null;
+    });
     producer.on("trackended", () => {
       logger.warn("camera disconnected");
+      client.camProducerState.set("closed");
       client.emit("notify", {
         type: "error",
         text: "Camera disconnected",
       });
 
-      // this.disableCam().catch(() => {});
+      this.disableCam().catch(() => {});
     });
 
     client.camProducer = producer;
@@ -268,16 +270,42 @@ export class ConferencePeer extends Peer {
 
     client.emit("producer-added", {
       id: producer.id,
+      // deviceLabel: device.label,
+      type: "front", // this._getWebcamType(device),
       paused: producer.paused,
       track: producer.track,
       rtpParameters: producer.rtpParameters,
       codec: producer.rtpParameters.codecs[0].mimeType.split("/")[1],
-      type: "front", // this._getWebcamType(device),
-      // deviceLabel: device.label,
     });
   }
 
-  async disableWebcam() {}
+  async closeProducer(producerType) {
+    const client = this.client;
+
+    if (client[producerType]) {
+      const producerId = client[producerType].id;
+
+      client[producerType].close();
+
+      try {
+        await this.request("closeProducer", { producerId });
+      } catch (error) {
+        logger.warn(`error closing server-side ${producerType}: %o`, error);
+      }
+
+      client[producerType] = null;
+      client.emit("producer-removed", producerId);
+    } else {
+      logger.warn(`no ${producerType}, can't close`);
+    }
+  }
+
+  async disableCam() {
+    this.videoTrackUnsub?.();
+    this.videoTrackUnsub = null;
+
+    await this.closeProducer("camProducer");
+  }
 
   // *** Events ***
 

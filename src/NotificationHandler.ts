@@ -63,8 +63,7 @@ export function dispatchNotification(
 ) {
   const data = notification.data;
 
-  // debug: show all notifications
-  logger.debug("NotificationHandler notification", notification.method, data);
+  logger.debug("received: %o", notification);
 
   switch (notification.method) {
     case "producerScore":
