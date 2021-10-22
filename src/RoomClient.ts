@@ -15,6 +15,7 @@ type ProducerState = "closed" | "open" | "paused" | "error";
 export class RoomClient extends EnhancedEventEmitter {
   // Params
   room: string;
+  url: string;
   displayName: string;
   produceAudio: boolean;
   produceVideo: boolean;
@@ -43,15 +44,19 @@ export class RoomClient extends EnhancedEventEmitter {
     video: false,
   });
 
-  constructor({
-    room = "default",
-    displayName = "user",
-    produceAudio = true,
-    produceVideo = true,
-    consume = true,
-  }) {
+  constructor(
+    url,
+    {
+      room = "default",
+      displayName = "user",
+      produceAudio = true,
+      produceVideo = true,
+      consume = true,
+    }
+  ) {
     super();
 
+    this.url = url;
     this.room = room;
     this.displayName = displayName;
     this.produceAudio = produceAudio;
@@ -63,9 +68,8 @@ export class RoomClient extends EnhancedEventEmitter {
     this.shareProducerState = writable("closed");
   }
 
-  join(room: string, url: string) {
-    this.room = room;
-    this.peer = new ConferencePeer(this, new WebSocketTransport(url));
+  join() {
+    this.peer = new ConferencePeer(this, new WebSocketTransport(this.url));
     this.state.set({ status: "connecting" });
   }
 
