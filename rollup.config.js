@@ -1,13 +1,16 @@
+import alias from "@rollup/plugin-alias";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
-import livereload from "rollup-plugin-livereload";
-import { terser } from "rollup-plugin-terser";
-import sveltePreprocess from "svelte-preprocess";
+import typescript from "@rollup/plugin-typescript";
+
 import css from "rollup-plugin-css-only";
+import livereload from "rollup-plugin-livereload";
 import nodePolyfills from "rollup-plugin-node-polyfills";
+import { terser } from "rollup-plugin-terser";
+
+import sveltePreprocess from "svelte-preprocess";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -40,8 +43,7 @@ export default {
   input: "src/main.ts",
   output: {
     sourcemap: true,
-    format: "cjs",
-    exports: "auto",
+    format: "iife",
     name: "app",
     file: "public/build/bundle.js",
   },
@@ -60,6 +62,9 @@ export default {
     // Need this to polyfill `EventEmitter`
     nodePolyfills(),
 
+    alias({
+      entries: [{ find: "debug", replacement: "anylogger" }],
+    }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
@@ -69,12 +74,12 @@ export default {
       browser: true,
       dedupe: ["svelte"],
     }),
-    commonjs(),
     typescript({
       sourceMap: !production,
       inlineSources: !production,
     }),
-		json(),
+    commonjs(),
+    json(),
 
     // In dev mode, call `npm run start` once
     // the bundle has been generated

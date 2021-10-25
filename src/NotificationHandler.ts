@@ -63,7 +63,11 @@ export function dispatchNotification(
 ) {
   const data = notification.data;
 
-  logger.debug("received: %o", notification);
+  if (["producerScore", "activeSpeaker"].includes(notification.method)) {
+    // logger.debug("received: %o", notification);
+  } else {
+    logger.debug("received: %o", notification);
+  }
 
   switch (notification.method) {
     case "producerScore":

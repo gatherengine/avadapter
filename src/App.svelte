@@ -1,17 +1,22 @@
 <script lang="ts">
   import { VideoMirror } from "video-mirror";
-  // import { RoomClient } from "./RoomClient";
+  import { RoomClient } from "./RoomClient";
+  import anylogger from "anylogger";
 
-  // let room = new RoomClient("wss://media2.relm.us:4443", { room: "test" });
+  const log = anylogger("App");
+
+  let room = new RoomClient("wss://media2.relm.us:4443", { room: "test" });
 
   function join() {
-    // room.join();
+    console.log('should join');
+    // log("join");
+    room.join();
   }
 </script>
 
 <main>
-  <VideoMirror />
-  <!-- <VideoMirror on:done={join} /> -->
+  <!-- <VideoMirror /> -->
+  <VideoMirror on:done={join} />
 </main>
 
 <style>

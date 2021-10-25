@@ -12,10 +12,15 @@ const logger = new Logger("RoomClient");
 
 type ProducerState = "closed" | "open" | "paused" | "error";
 
+function randomPeerId() {
+  return Math.random().toString().slice(2);
+}
+
 export class RoomClient extends EnhancedEventEmitter {
   // Params
+  origin: string; // e.g. https://media.mydomain.com:4443
   room: string;
-  url: string;
+  peerId: string;
   displayName: string;
   produceAudio: boolean;
   produceVideo: boolean;
@@ -45,9 +50,10 @@ export class RoomClient extends EnhancedEventEmitter {
   });
 
   constructor(
-    url,
+    origin,
     {
       room = "default",
+      peerId = randomPeerId(),
       displayName = "user",
       produceAudio = true,
       produceVideo = true,
@@ -56,8 +62,9 @@ export class RoomClient extends EnhancedEventEmitter {
   ) {
     super();
 
-    this.url = url;
+    this.origin = origin;
     this.room = room;
+    this.peerId = peerId;
     this.displayName = displayName;
     this.produceAudio = produceAudio;
     this.produceVideo = produceVideo;
@@ -68,8 +75,15 @@ export class RoomClient extends EnhancedEventEmitter {
     this.shareProducerState = writable("closed");
   }
 
+  getMediasoupUrl() {
+    return `${this.origin}/?roomId=${this.room}&peerId=${this.peerId}`;
+  }
+
   join() {
-    this.peer = new ConferencePeer(this, new WebSocketTransport(this.url));
+    this.peer = new ConferencePeer(
+      this,
+      new WebSocketTransport(this.getMediasoupUrl())
+    );
     this.state.set({ status: "connecting" });
   }
 
