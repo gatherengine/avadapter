@@ -63,7 +63,7 @@ export default {
     nodePolyfills(),
 
     alias({
-      entries: [{ find: "debug", replacement: "anylogger" }],
+      entries: [{ find: "debug", replacement: "debug-ts" }],
     }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
