@@ -1,18 +1,15 @@
 <script lang="ts">
-  import { Audio, Video } from "video-mirror";
   import type { Writable } from "svelte/store";
+  import Circle from "./Circle.svelte";
 
   export let peer: Writable<PeerData>;
 
-  type PeerData = {
-    id: string;
-    consumers: Record<string, any>;
-  };
+  function getStream(consumers: Record<string, any>, kind: "audio" | "video") {
+    return Object.values(consumers).find((consumer) => consumer.kind === kind)
+      ?.stream;
+  }
 </script>
 
-<div><em>Peer</em></div>
-{$peer.id}
-{#each Object.values($peer.consumers) as consumer}
-  {#if consumer.kind === "audio"}<Audio stream={consumer.stream} />{/if}
-  {#if consumer.kind === "video"}<Video stream={consumer.stream} />{/if}
-{/each}
+<Circle
+  audioStream={getStream($peer.consumers, "audio")}
+  videoStream={getStream($peer.consumers, "video")} />

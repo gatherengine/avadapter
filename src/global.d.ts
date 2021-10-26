@@ -5,3 +5,8 @@ type RequestRejectFunction = (
   error?: Error | number,
   errorReason?: string
 ) => void;
+
+type PeerData = {
+  id: string;
+  consumers: Record<string, any>;
+};

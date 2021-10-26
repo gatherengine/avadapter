@@ -1,16 +1,13 @@
 <script lang="ts">
   import { get, writable, Writable } from "svelte/store";
-  import { VideoMirror } from "video-mirror";
+  import { VideoMirror, localStream } from "video-mirror";
   import { RoomClient } from "./RoomClient";
   import Peer from "./Peer.svelte";
-
-  type PeerData = {
-    id: string;
-    consumers: Record<string, any>;
-  };
+  import Circle from "./Circle.svelte";
 
   const peers: Writable<Record<string, Writable<PeerData>>> = writable({});
 
+  let showMirror = true;
   let room = new RoomClient("wss://media2.relm.us:4443", { room: "test" });
 
   room.on("peer-added", (peer) => {
@@ -43,23 +40,43 @@
 
   function join() {
     room.join();
+    showMirror = false;
   }
 </script>
 
-<main>
-  <!-- <VideoMirror /> -->
-  <VideoMirror on:done={join} />
-  {#each Object.values($peers) as peer}
-    <Peer {peer} />
-  {/each}
-</main>
+{#if showMirror}
+  <main>
+    <VideoMirror on:done={join} />
+  </main>
+{:else}
+  <div class="grid">
+    <Circle
+      audioStream={$localStream}
+      videoStream={$localStream}
+      mirror={true} />
+    {#each Object.values($peers) as peer}
+      <Peer {peer} />
+    {/each}
+  </div>
+{/if}
 
 <style>
   main {
-    text-align: center;
+    display: flex;
     padding: 1em;
     max-width: 240px;
-    margin: 0 auto;
+    margin: auto;
+    justify-content: center;
+  }
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    width: min(100vh, 100vw);
+    justify-content: center;
+  }
+  .grid > :global(*) {
+    margin: 16px;
   }
   @media (min-width: 640px) {
     main {
