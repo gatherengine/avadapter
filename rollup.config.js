@@ -4,6 +4,7 @@ import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
 import svelte from "rollup-plugin-svelte";
 import typescript from "@rollup/plugin-typescript";
+import url from "@rollup/plugin-url";
 
 import css from "rollup-plugin-css-only";
 import livereload from "rollup-plugin-livereload";
@@ -13,6 +14,7 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 
 const production = !process.env.ROLLUP_WATCH;
+console.log('production', production);
 
 function serve() {
   let server;
@@ -65,6 +67,20 @@ export default {
     alias({
       entries: [{ find: "debug", replacement: "debug-ts" }],
     }),
+
+    url({
+      publicPath: "build/",
+      include: [
+        "**/*.svg",
+        "**/*.png",
+        "**/*.jp(e)?g",
+        "**/*.gif",
+        "**/*.webp",
+        "**/*.ttf",
+        "**/*.woff",
+      ],
+    }),
+
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
