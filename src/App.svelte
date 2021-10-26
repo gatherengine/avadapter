@@ -53,7 +53,7 @@
     <Circle
       audioStream={$localStream}
       videoStream={$localStream}
-      mirror={true} />
+      isMe={true} />
     {#each Object.values($peers) as peer}
       <Peer {peer} />
     {/each}

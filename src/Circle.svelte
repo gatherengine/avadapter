@@ -3,12 +3,15 @@
 
   export let audioStream: MediaStream;
   export let videoStream: MediaStream;
-  export let mirror: boolean = false;
+  export let isMe: boolean = false;
 </script>
 
 <div class="circle">
-  {#if audioStream}<Audio stream={audioStream} />{/if}
-  {#if videoStream}<Video stream={videoStream} {mirror} visible={true} />{/if}
+  {#if audioStream && !isMe}<Audio stream={audioStream} />{/if}
+  {#if videoStream}<Video
+      stream={videoStream}
+      mirror={isMe}
+      visible={true} />{/if}
 </div>
 
 <style>
