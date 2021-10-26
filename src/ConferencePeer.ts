@@ -15,8 +15,7 @@ import {
   WEBCAM_SIMULCAST_ENCODINGS,
 } from "./constants";
 import type { RoomClient } from "./RoomClient";
-import { dispatchNotification } from "./NotificationHandler";
-import { dispatchRequest } from "./RequestHandler";
+import { dispatchNotification, dispatchRequest } from "./dispatch";
 import * as sendTransportHandler from "./SendTransportHandler";
 import * as recvTransportHandler from "./RecvTransportHandler";
 import type { Unsubscriber } from "svelte/store";
@@ -283,7 +282,7 @@ export class ConferencePeer extends Peer {
     });
   }
 
-  async closeProducer(producerType) {
+  async closeProducer(producerType: ProducerType) {
     const client = this.client;
 
     if (client[producerType]) {

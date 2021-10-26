@@ -44,13 +44,13 @@ export class RoomClient extends EnhancedEventEmitter {
 
   // Events
 
-  // notify: messages for user, e.g. errors
-  // peer-added
-  // peer-removed
-  // consumer-added
-  // consumer-removed
-  // producer-added
-  // producer-removed
+  // notify {type, message}: messages for user, e.g. errors
+  // peer-added peer
+  // peer-removed peerId
+  // consumer-added consumer
+  // consumer-removed consumerId
+  // producer-added producer
+  // producer-removed producerId
 
   // Reactive stores
   state: Writable<RoomState> = writable({ status: "disconnected" });
