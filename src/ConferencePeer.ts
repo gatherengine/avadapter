@@ -160,7 +160,9 @@ export class ConferencePeer extends Peer {
     }
 
     this.audioTrackUnsub = audioTrack.subscribe(async (track) => {
-      await this.closeProducer("micProducer");
+      if (this.client.micProducer) {
+        await this.closeProducer("micProducer");
+      }
 
       await this.openMicProducer(track);
     });
@@ -220,7 +222,9 @@ export class ConferencePeer extends Peer {
     }
 
     this.videoTrackUnsub = videoTrack.subscribe(async (track) => {
-      await this.closeProducer("camProducer");
+      if (this.client.camProducer) {
+        await this.closeProducer("camProducer");
+      }
 
       try {
         await this.openCamProducer(track);

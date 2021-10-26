@@ -25,12 +25,22 @@ function peerDisplayNameChanged(
   //
 }
 
+// Bandwidth Estimation
 function downlinkBwe(room: RoomClient, data) {
   //
 }
 
 function consumerClosed(room: RoomClient, consumerId) {
-  //
+  const consumer = room.consumers.get(consumerId);
+
+  if (consumer) {
+    consumer.close();
+    room.consumers.delete(consumerId);
+
+    const { peerId } = consumer.appData;
+
+    room.emit("consumer-removed", peerId);
+  }
 }
 
 function consumerPaused(room: RoomClient, consumerId) {
@@ -63,7 +73,11 @@ export function dispatchNotification(
 ) {
   const data = notification.data;
 
-  if (["producerScore", "activeSpeaker"].includes(notification.method)) {
+  if (
+    ["producerScore", "consumerScore", "activeSpeaker", "downlinkBwe"].includes(
+      notification.method
+    )
+  ) {
     // logger.debug("received: %o", notification);
   } else {
     logger.debug("received: %o", notification);

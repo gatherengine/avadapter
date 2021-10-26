@@ -4,6 +4,10 @@
 
   let room = new RoomClient("wss://media2.relm.us:4443", { room: "test" });
 
+  room.on("consumer-added", (data) => {
+    console.log("consumer-added", data);
+  });
+
   function join() {
     room.join();
   }

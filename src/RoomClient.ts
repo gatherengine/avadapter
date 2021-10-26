@@ -42,6 +42,16 @@ export class RoomClient extends EnhancedEventEmitter {
   recvTransport: Transport;
   peer: ConferencePeer;
 
+  // Events
+
+  // notify: messages for user, e.g. errors
+  // peer-added
+  // peer-removed
+  // consumer-added
+  // consumer-removed
+  // producer-added
+  // producer-removed
+
   // Reactive stores
   state: Writable<RoomState> = writable({ status: "disconnected" });
   browserCan: Writable<{ audio: boolean; video: boolean }> = writable({
@@ -61,6 +71,7 @@ export class RoomClient extends EnhancedEventEmitter {
     }
   ) {
     super();
+    logger.debug("constructor()");
 
     this.origin = origin;
     this.room = room;
@@ -80,6 +91,8 @@ export class RoomClient extends EnhancedEventEmitter {
   }
 
   join() {
+    logger.debug("join()");
+
     this.peer = new ConferencePeer(
       this,
       new WebSocketTransport(this.getMediasoupUrl())
