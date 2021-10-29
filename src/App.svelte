@@ -1,45 +1,50 @@
 <script lang="ts">
   import { get, writable, Writable } from "svelte/store";
   import { VideoMirror, localStream } from "video-mirror";
-  import { RoomClient } from "./RoomClient";
-  import Peer from "./Peer.svelte";
+  import { MediaSoupAVAdapter } from "./AVAdapter";
+  import Participant from "./Participant.svelte";
   import Circle from "./Circle.svelte";
 
-  const peers: Writable<Record<string, Writable<PeerData>>> = writable({});
+  const av = new MediaSoupAVAdapter({ origin: "wss://media2.relm.us:4443" });
+  const participants: Writable<Record<string, Writable<AppParticipant>>> =
+    writable({});
 
   let showMirror = true;
-  let room = new RoomClient("wss://media2.relm.us:4443", { room: "test" });
 
-  room.on("peer-added", (peer) => {
-    console.log("peer-added", peer);
-    peers.update((record) => {
+  av.on("participant-added", (participant) => {
+    console.log("participant-added", participant);
+    participants.update((record) => {
       return {
         ...record,
-        [peer.id]: writable({
-          id: peer.id,
-          consumers: {},
+        [participant.id]: writable({
+          id: participant.id,
+          resources: {},
         }),
       };
     });
   });
 
-  room.on("peer-removed", (peerId) => {
-    console.log("peer-removed", peerId);
-    peers.update((record) => {
-      const { [peerId]: removedPeer, ...peers } = record;
+  av.on("participant-removed", (participantId) => {
+    console.log("participant-removed", participantId);
+    participants.update((record) => {
+      const { [participantId]: removedPeer, ...peers } = record;
       return peers;
     });
   });
 
-  room.on("consumer-added", (data) => {
-    console.log("consumer-added", data, get($peers[data.peerId]));
-    $peers[data.peerId].update((record) => {
-      return { ...record, consumers: { ...record.consumers, [data.id]: data } };
+  av.on("resource-added", (resource) => {
+    const participantStore = $participants[resource.participantId];
+    console.log("resource-added", resource, get(participantStore));
+    participantStore.update((record) => {
+      return {
+        ...record,
+        resources: { ...record.resources, [resource.id]: resource },
+      };
     });
   });
 
   function join() {
-    room.join();
+    av.connect({ roomId: "test-room" });
     showMirror = false;
   }
 </script>
@@ -50,12 +55,9 @@
   </main>
 {:else}
   <div class="grid">
-    <Circle
-      audioStream={$localStream}
-      videoStream={$localStream}
-      isMe={true} />
-    {#each Object.values($peers) as peer}
-      <Peer {peer} />
+    <Circle audioStream={$localStream} videoStream={$localStream} isMe={true} />
+    {#each Object.values($participants) as participant}
+      <Participant {participant} />
     {/each}
   </div>
 {/if}

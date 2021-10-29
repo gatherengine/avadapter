@@ -10,3 +10,8 @@ type PeerData = {
   id: string;
   consumers: Record<string, any>;
 };
+
+type AppParticipant = {
+  id: string;
+  resources: Record<string, AVResource>;
+};

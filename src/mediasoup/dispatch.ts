@@ -8,6 +8,7 @@ import type { RtpParameters } from "mediasoup-client/lib/RtpParameters";
 const logger = new Logger("dispatch");
 
 function producerScore(room: RoomClient, producerId, score) {
+  console.log("score", producerId, score);
   //
 }
 
@@ -28,9 +29,16 @@ function peerDisplayNameChanged(
   //
 }
 
-// Bandwidth Estimation
-function downlinkBwe(room: RoomClient, data) {
-  //
+function downlinkBandwidthEstimation(
+  room: RoomClient,
+  desiredBitrate: number,
+  effectiveDesiredBitrate: number,
+  availableBitrate: number
+) {
+  room.emit("bandwidth-estimate", {
+    desired: desiredBitrate,
+    actual: availableBitrate,
+  });
 }
 
 async function newConsumer(
@@ -66,9 +74,6 @@ async function newConsumer(
       consumer.rtpParameters.encodings[0].scalabilityMode
     );
 
-    const stream = new MediaStream();
-    stream.addTrack(consumer.track);
-
     room.emit("consumer-added", {
       id: consumer.id,
       peerId,
@@ -84,7 +89,6 @@ async function newConsumer(
       priority: 1,
       codec: consumer.rtpParameters.codecs[0].mimeType.split("/")[1],
       track: consumer.track,
-      stream,
     });
   } catch (err) {
     logger.error("rejecting consumer: %s", err);
@@ -165,7 +169,12 @@ export function dispatchNotification(
         data.oldDisplayName
       );
     case "downlinkBwe":
-      return downlinkBwe(client, data);
+      return downlinkBandwidthEstimation(
+        client,
+        data.desiredBitrate,
+        data.effectiveDesiredBitrate,
+        data.availableBitrate
+      );
     case "consumerClosed":
       return consumerClosed(client, data.consumerId);
     case "consumerPaused":

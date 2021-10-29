@@ -3,7 +3,6 @@ import {
   Peer,
   ProtooNotification,
   ProtooRequest,
-  ProtooResponse,
 } from "protoo-client";
 import { Device } from "mediasoup-client";
 import { audioTrack, videoTrack } from "video-mirror";
@@ -48,7 +47,7 @@ export class ConferencePeer extends Peer {
       handlerName: undefined, // TODO: do our own browser detection?
     });
 
-    const routerRtpCapabilities = await this.client.peer.request(
+    const routerRtpCapabilities = await this.request(
       "getRouterRtpCapabilities"
     );
 
@@ -59,7 +58,7 @@ export class ConferencePeer extends Peer {
 
   async establishSendTransport() {
     const { id, iceParameters, iceCandidates, dtlsParameters, sctpParameters } =
-      await this.client.peer.request("createWebRtcTransport", {
+      await this.request("createWebRtcTransport", {
         forceTcp: false, // configurable?
         producing: true,
         consuming: false,
@@ -76,12 +75,12 @@ export class ConferencePeer extends Peer {
       proprietaryConstraints: PC_PROPRIETARY_CONSTRAINTS,
     });
 
-    sendTransportHandler.listen(this.client.sendTransport, this.client.peer);
+    sendTransportHandler.listen(this.client.sendTransport, this);
   }
 
   async establishRecvTransport() {
     const { id, iceParameters, iceCandidates, dtlsParameters, sctpParameters } =
-      await this.client.peer.request("createWebRtcTransport", {
+      await this.request("createWebRtcTransport", {
         forceTcp: false, // configurable?
         producing: false,
         consuming: true,
@@ -97,13 +96,13 @@ export class ConferencePeer extends Peer {
       iceServers: [],
     });
 
-    recvTransportHandler.listen(this.client.recvTransport, this.client.peer);
+    recvTransportHandler.listen(this.client.recvTransport, this);
   }
 
   // Once browserDevice and recv/send Transports are established, we can
   // connect to the room.
   async connectRoom() {
-    const { peers } = await this.client.peer.request("join", {
+    const { peers } = await this.request("join", {
       displayName: this.client.displayName,
       device: this.browserDevice!,
       // send our RTP capabilities only if we want to consume
@@ -199,6 +198,7 @@ export class ConferencePeer extends Peer {
 
     client.emit("producer-added", {
       id: producer.id,
+      type: "front", // TODO: get actual front/back value
       paused: producer.paused,
       track: producer.track,
       rtpParameters: producer.rtpParameters,
@@ -271,6 +271,7 @@ export class ConferencePeer extends Peer {
     client.camProducer = producer;
     client.camProducerState.set("open");
 
+    console.log('producer added', producer);
     client.emit("producer-added", {
       id: producer.id,
       // deviceLabel: device.label,
