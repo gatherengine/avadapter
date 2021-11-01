@@ -1,7 +1,8 @@
 <script lang="ts">
   import { setContext, getContext } from "svelte";
   import type { Writable } from "svelte/store";
-  import type { AVResource } from "./AVAdapter";
+  import type { AVResource } from "avadapter";
+  import type { AppParticipant } from "./types";
   import Circle from "./Circle.svelte";
 
   export let participant: Writable<AppParticipant>;

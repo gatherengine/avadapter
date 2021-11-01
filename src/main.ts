@@ -1,8 +1,3 @@
-// import "ulog";
-import App from "./App.svelte";
-
-const app = new App({
-  target: document.body,
-});
-
-export default app;
+export { AVAdapter } from "./AVAdapter";
+export { MediaSoupAVAdapter } from "./MediaSoupAVAdapter";
+export type { AVResource, AVParticipant, ConnectStatus } from "./types";

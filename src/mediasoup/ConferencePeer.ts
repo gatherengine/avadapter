@@ -18,6 +18,7 @@ import { dispatchNotification, dispatchRequest } from "./dispatch";
 import * as sendTransportHandler from "./SendTransportHandler";
 import * as recvTransportHandler from "./RecvTransportHandler";
 import type { Unsubscriber } from "svelte/store";
+import type { RequestAcceptFunction, RequestRejectFunction } from "./types";
 
 const logger = new Logger("ConferencePeer");
 
@@ -271,7 +272,7 @@ export class ConferencePeer extends Peer {
     client.camProducer = producer;
     client.camProducerState.set("open");
 
-    console.log('producer added', producer);
+    console.log("producer added", producer);
     client.emit("producer-added", {
       id: producer.id,
       // deviceLabel: device.label,

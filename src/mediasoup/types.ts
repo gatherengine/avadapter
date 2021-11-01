@@ -1,5 +1,6 @@
 import type { Device } from "mediasoup-client";
 import type { RtpParameters } from "mediasoup-client/lib/RtpParameters";
+import type { ProtooResponse } from "protoo-client";
 
 export type ProducerState = "closed" | "open" | "paused" | "error";
 
@@ -45,3 +46,9 @@ export type MSProducer = {
   rtpParameters: RtpParameters;
   codec: string;
 };
+
+export type RequestAcceptFunction = (data?: ProtooResponse) => void;
+export type RequestRejectFunction = (
+  error?: Error | number,
+  errorReason?: string
+) => void;

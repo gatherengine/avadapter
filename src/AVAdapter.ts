@@ -1,6 +1,6 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { RoomClient } from "./mediasoup/RoomClient";
 import type { BandwidthEstimate, MSPeer } from "./mediasoup/types";
+import type { AVParticipant, AVResource, ConnectStatus } from "./types";
 
 interface AVAdapterEvents {
   "participant-added": (peer: AVParticipant) => void;
@@ -35,72 +35,6 @@ export class AVAdapter extends TypedEmitter<AVAdapterEvents> {
   disableShare(pause: boolean = false) {}
 }
 
-export type AVParticipant = {
-  id: string;
-  isDominant: boolean;
-  connectionScore: number; // 0 to 1
-};
-
-export type AVResource = {
-  id: string;
-  participantId: string;
-  kind: "audio" | "video";
-  paused: boolean;
-  track: MediaStreamTrack;
-};
-
-export type ConnectStatus =
-  | { status: "disconnected" }
-  | { status: "connecting" }
-  | { status: "connected" }
-  | { status: "error"; error: Error };
-
-export class MediaSoupAVAdapter extends AVAdapter {
-  room: RoomClient;
-
-  connect({
-    roomId = "default",
-    userId = randomPeerId(),
-    displayName = "user",
-    produceAudio = true,
-    produceVideo = true,
-  }) {
-    this.room = new RoomClient(this.origin, {
-      roomId,
-      peerId: userId,
-      displayName,
-      produceAudio,
-      produceVideo,
-    });
-    this.room.on("peer-added", (peer: MSPeer) => {
-      this.emit("participant-added", {
-        id: peer.id,
-        isDominant: false,
-        connectionScore: 1,
-      });
-    });
-    this.room.on("peer-removed", (peerId: string) => {
-      this.emit("participant-removed", peerId);
-    });
-    this.room.on("consumer-added", (consumer) => {
-      this.emit("resource-added", {
-        id: consumer.id,
-        participantId: consumer.peerId,
-        paused: false,
-        kind: consumer.kind,
-        track: consumer.track,
-      });
-    });
-    this.room.on("consumer-removed", (consumerId) => {
-      this.emit("resource-removed", consumerId);
-    });
-    this.room.on("bandwidth-estimate", (estimate: BandwidthEstimate) => {
-      this.emit("bandwidth-estimate", estimate);
-    });
-    this.room.join();
-  }
-}
-
 // https://www.twilio.com/docs/video
 // class TwilioAVAdapter extends AVAdapter {
 //   constructor() {
@@ -127,6 +61,3 @@ export class MediaSoupAVAdapter extends AVAdapter {
 //   enableShare() {}
 //   disableShare(pause: boolean = false) {}
 // }
-function randomPeerId() {
-  return Math.random().toString().slice(2);
-}

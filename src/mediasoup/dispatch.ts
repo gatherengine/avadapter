@@ -4,6 +4,7 @@ import { parseScalabilityMode } from "mediasoup-client";
 import type { ProtooRequest, ProtooResponse } from "protoo-client";
 import type { RoomClient } from "./RoomClient";
 import type { RtpParameters } from "mediasoup-client/lib/RtpParameters";
+import type { RequestAcceptFunction, RequestRejectFunction } from "./types";
 
 const logger = new Logger("dispatch");
 

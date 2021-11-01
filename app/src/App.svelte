@@ -1,7 +1,9 @@
 <script lang="ts">
   import { get, writable, Writable } from "svelte/store";
   import { VideoMirror, localStream } from "video-mirror";
-  import { MediaSoupAVAdapter } from "./AVAdapter";
+  import { MediaSoupAVAdapter } from "avadapter";
+
+  import type { AppParticipant } from "./types";
   import Participant from "./Participant.svelte";
   import Circle from "./Circle.svelte";
 
