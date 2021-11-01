@@ -1,5 +1,11 @@
-# GatherEngine Conference
+# GatherEngine AV Adapter
 
-A svelte-based videoconference frontend for a mediasoup SFU backend.
+An adapter for multiple audio/video solutions.
 
-WIP
+Currently supports:
+
+- mediasoup
+
+TODO:
+
+- twilio
