@@ -24,6 +24,7 @@ specifiers:
   svelte-preprocess: 4.9.8
   tiny-typed-emitter: ^2.1.0
   tslib: 2.3.1
+  twilio-video: ^2.18.1
   typescript: 4.4.4
   video-mirror: 1.1.0
 
@@ -33,6 +34,7 @@ dependencies:
   protoo-client: 4.0.6
   sirv-cli: 1.0.14
   tiny-typed-emitter: 2.1.0
+  twilio-video: 2.18.1
   video-mirror: 1.1.0
 
 devDependencies:
@@ -205,6 +207,10 @@ packages:
     resolution: {integrity: sha512-aqkICXbM1oX5FfgZd2qSSAGdyo/NRxjWCamxoyi3T8iVQnzGge19HhDYzZ6NrVOW7bhcWNSq9XexWFtMzbB24A==}
     dev: true
 
+  /@twilio/webrtc/4.5.1:
+    resolution: {integrity: sha512-0GwnffxJ71jm/7sYD8MYHzZRCR59p7KYqiMO8/Fmny7S4L0s8Ms36ghUUfCE7x/XuWjAC4FU6L/DkFN1Ewuu8Q==}
+    dev: false
+
   /@types/debug/4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
@@ -293,6 +299,13 @@ packages:
   /awaitqueue/2.3.3:
     resolution: {integrity: sha512-RbzQg6VtPUtyErm55iuQLTrBJ2uihy5BKBOEkyBwv67xm5Fn2o/j+Bz+a5BmfSoe2oZ5dcz9Z3fExS8pL+LLhw==}
     engines: {node: '>=8.0.0'}
+    dev: false
+
+  /backoff/2.5.0:
+    resolution: {integrity: sha1-9hbtqdPktmuMp/ynn2lXIsX44m8=}
+    engines: {node: '>= 0.6'}
+    dependencies:
+      precond: 0.2.3
     dev: false
 
   /balanced-match/1.0.2:
@@ -884,6 +897,11 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
+  /precond/0.2.3:
+    resolution: {integrity: sha1-qpWRvKokkj8eD0hJ0kD0fvwQdaw=}
+    engines: {node: '>= 0.6'}
+    dev: false
+
   /protoo-client/4.0.6:
     resolution: {integrity: sha512-ZqImkKHpeJhSlgvyI6QAfZNc/aXcCgmmocMx4S1w2lAaxXtckxxeDtcVNtkOISUWm/mbC+BrmYPXoGMkfhkKOQ==}
     engines: {node: '>=8.0.0'}
@@ -1275,6 +1293,19 @@ packages:
     resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
     dev: true
 
+  /twilio-video/2.18.1:
+    resolution: {integrity: sha512-M2/1P3S7+DrJkY5WNaYSS6vhTllDjKbfR0Es8meVKfAbgEz9MLelVDvirEHkJXJ2j6mwl4Km5j5PrP2EGUOosA==}
+    engines: {node: '>=0.12'}
+    dependencies:
+      '@twilio/webrtc': 4.5.1
+      backoff: 2.5.0
+      ws: 7.5.5
+      xmlhttprequest: 1.8.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
   /type/1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
     dev: false
@@ -1348,7 +1379,11 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
+
+  /xmlhttprequest/1.8.0:
+    resolution: {integrity: sha1-Z/4HXFwk/vOfnWX197f+dRcZaPw=}
+    engines: {node: '>=0.4.0'}
+    dev: false
 
   /yaeti/0.0.6:
     resolution: {integrity: sha1-8m9ITXJoTPQr7ft2lwqhYI+/lXc=}

@@ -5,7 +5,6 @@ import {
   ProtooRequest,
 } from "protoo-client";
 import { Device } from "mediasoup-client";
-import { audioTrack, videoTrack } from "video-mirror";
 
 import { Logger } from "./Logger";
 import {
@@ -17,23 +16,33 @@ import type { RoomClient } from "./RoomClient";
 import { dispatchNotification, dispatchRequest } from "./dispatch";
 import * as sendTransportHandler from "./SendTransportHandler";
 import * as recvTransportHandler from "./RecvTransportHandler";
-import type { Unsubscriber } from "svelte/store";
 import type { RequestAcceptFunction, RequestRejectFunction } from "./types";
+import { TrackStore } from "../types";
 
 const logger = new Logger("ConferencePeer");
 
 type ProducerType = "micProducer" | "camProducer" | "shareProducer";
+type Unsubscriber = () => void;
 
 export class ConferencePeer extends Peer {
   client: RoomClient;
   browserDevice: Device;
 
+  audioTrackStore: TrackStore;
+  videoTrackStore: TrackStore;
   audioTrackUnsub: Unsubscriber = null;
   videoTrackUnsub: Unsubscriber = null;
 
-  constructor(room: RoomClient, transport: WebSocketTransport) {
+  constructor(
+    room: RoomClient,
+    audioTrackStore: TrackStore,
+    videoTrackStore: TrackStore,
+    transport: WebSocketTransport
+  ) {
     super(transport);
     this.client = room;
+    this.audioTrackStore = audioTrackStore;
+    this.videoTrackStore = videoTrackStore;
 
     this.on("open", this.onOpen.bind(this));
     this.on("request", this.onRequest.bind(this));
@@ -158,7 +167,7 @@ export class ConferencePeer extends Peer {
       this.audioTrackUnsub?.();
     }
 
-    this.audioTrackUnsub = audioTrack.subscribe(async (track) => {
+    this.audioTrackUnsub = this.audioTrackStore.subscribe(async (track) => {
       if (this.client.micProducer) {
         await this.closeProducer("micProducer");
       }
@@ -221,7 +230,7 @@ export class ConferencePeer extends Peer {
       this.videoTrackUnsub?.();
     }
 
-    this.videoTrackUnsub = videoTrack.subscribe(async (track) => {
+    this.videoTrackUnsub = this.videoTrackStore.subscribe(async (track) => {
       if (this.client.camProducer) {
         await this.closeProducer("camProducer");
       }

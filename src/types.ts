@@ -18,3 +18,32 @@ export type ConnectStatus =
   | { status: "connected" }
   | { status: "error"; error: Error };
 
+export type ConnectOptions = {
+  token: string;
+  roomId: string;
+  displayName: string;
+  userId: string;
+  produceAudio: boolean;
+  produceVideo: boolean;
+  localAudioTrack: TrackStore;
+  localVideoTrack: TrackStore;
+};
+
+/** Define TrackStore type, which fulfills the 'writable' Svelte store contract */
+type Subscriber<T> = (value: T) => void;
+type Unsubscriber = () => void;
+type Updater<T> = (value: T) => T;
+type Invalidator<T> = (value?: T) => void;
+interface Readable<T> {
+  subscribe(
+    this: void,
+    run: Subscriber<T>,
+    invalidate?: Invalidator<T>
+  ): Unsubscriber;
+}
+interface Writable<T> extends Readable<T> {
+  set(this: void, value: T): void;
+  update(this: void, updater: Updater<T>): void;
+}
+
+export type TrackStore = Writable<MediaStreamTrack>;

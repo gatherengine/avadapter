@@ -1,8 +1,9 @@
 {
   "name": "avadapter",
   "version": "0.1.0",
-  "module": "dist/index.mjs",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
+  "module": "dist/client.mjs",
+  "browser": "dist/client.js",
   "license": "MIT",
   "scripts": {
     "build": "rollup -c",
@@ -41,8 +42,8 @@
     "mediasoup-client": "3.6.43",
     "protoo-client": "4.0.6",
     "sirv-cli": "1.0.14",
-    "tiny-typed-emitter": "^2.1.0",
-    "video-mirror": "1.1.0"
+    "tiny-typed-emitter": "2.1.0",
+    "twilio-video": "2.18.1"
   },
   "prettier": {
     "quoteProps": "consistent"

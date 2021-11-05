@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "sirv-cli": "1.0.14",
-    "video-mirror": "1.1.0",
+    "video-mirror": "2.0.0",
     "avadapter": "../"
   },
   "prettier": {

@@ -13,6 +13,7 @@ import type {
   RoomState,
   ProducerState,
   BandwidthEstimate,
+  MSJoinOptions,
 } from "./types";
 
 const logger = new Logger("RoomClient");
@@ -70,27 +71,11 @@ export class RoomClient extends TypedEmitter<RoomClientEvents> {
     video: false,
   });
 
-  constructor(
-    origin,
-    {
-      roomId = "default",
-      peerId = randomPeerId(),
-      displayName = "user",
-      produceAudio = true,
-      produceVideo = true,
-      consume = true,
-    }
-  ) {
+  constructor(origin) {
     super();
     logger.debug("constructor()");
 
     this.origin = origin;
-    this.roomId = roomId;
-    this.peerId = peerId;
-    this.displayName = displayName;
-    this.produceAudio = produceAudio;
-    this.produceVideo = produceVideo;
-    this.consume = consume;
 
     this.micProducerState = writable("closed");
     this.camProducerState = writable("closed");
@@ -101,11 +86,31 @@ export class RoomClient extends TypedEmitter<RoomClientEvents> {
     return `${this.origin}/?roomId=${this.roomId}&peerId=${this.peerId}`;
   }
 
-  join() {
+  join(
+    localAudioTrackStore,
+    localVideoTrackStore,
+    {
+      roomId = "default",
+      peerId = randomPeerId(),
+      displayName = "user",
+      produceAudio = true,
+      produceVideo = true,
+      consume = true,
+    }: MSJoinOptions
+  ) {
     logger.debug("join()");
+
+    this.roomId = roomId;
+    this.peerId = peerId;
+    this.displayName = displayName;
+    this.produceAudio = produceAudio;
+    this.produceVideo = produceVideo;
+    this.consume = consume;
 
     this.peer = new ConferencePeer(
       this,
+      localAudioTrackStore,
+      localVideoTrackStore,
       new WebSocketTransport(this.getMediasoupUrl())
     );
     this.state.set({ status: "connecting" });

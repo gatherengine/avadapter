@@ -1,24 +1,24 @@
-import { RoomClient } from "./mediasoup/RoomClient";
-import type { BandwidthEstimate, MSPeer } from "./mediasoup/types";
-import { AVAdapter } from "./AVAdapter";
+import { AVAdapter } from "../AVAdapter";
+import { TrackStore } from "../types";
+
+import { RoomClient } from "./RoomClient";
+import type { BandwidthEstimate, MSPeer } from "./types";
 
 export class MediaSoupAVAdapter extends AVAdapter {
   room: RoomClient;
 
-  connect({
-    roomId = "default",
-    userId = randomPeerId(),
-    displayName = "user",
-    produceAudio = true,
-    produceVideo = true,
-  }) {
-    this.room = new RoomClient(this.origin, {
-      roomId,
-      peerId: userId,
-      displayName,
-      produceAudio,
-      produceVideo,
-    });
+  async connect(
+    localAudioTrackStore: TrackStore,
+    localVideoTrackStore: TrackStore,
+    {
+      roomId = "default",
+      userId = randomPeerId(),
+      displayName = "user",
+      produceAudio = true,
+      produceVideo = true,
+    }
+  ) {
+    this.room = new RoomClient(this.origin);
     this.room.on("peer-added", (peer: MSPeer) => {
       this.emit("participant-added", {
         id: peer.id,
@@ -44,7 +44,13 @@ export class MediaSoupAVAdapter extends AVAdapter {
     this.room.on("bandwidth-estimate", (estimate: BandwidthEstimate) => {
       this.emit("bandwidth-estimate", estimate);
     });
-    this.room.join();
+    this.room.join(localAudioTrackStore, localVideoTrackStore, {
+      roomId,
+      peerId: userId,
+      displayName,
+      produceAudio,
+      produceVideo,
+    });
   }
 }
 

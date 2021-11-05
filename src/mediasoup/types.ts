@@ -1,6 +1,7 @@
 import type { Device } from "mediasoup-client";
 import type { RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import type { ProtooResponse } from "protoo-client";
+import type { TrackStore } from '../types';
 
 export type ProducerState = "closed" | "open" | "paused" | "error";
 
@@ -47,8 +48,19 @@ export type MSProducer = {
   codec: string;
 };
 
+export type MSJoinOptions = {
+  token?: string;
+  roomId?: string;
+  displayName?: string;
+  peerId?: string;
+  produceAudio?: boolean;
+  produceVideo?: boolean;
+  consume?: boolean;
+};
+
 export type RequestAcceptFunction = (data?: ProtooResponse) => void;
 export type RequestRejectFunction = (
   error?: Error | number,
   errorReason?: string
 ) => void;
+

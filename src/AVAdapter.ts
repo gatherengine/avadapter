@@ -1,6 +1,12 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 import type { BandwidthEstimate, MSPeer } from "./mediasoup/types";
-import type { AVParticipant, AVResource, ConnectStatus } from "./types";
+import type {
+  AVParticipant,
+  AVResource,
+  ConnectOptions,
+  ConnectStatus,
+  TrackStore,
+} from "./types";
 
 interface AVAdapterEvents {
   "participant-added": (peer: AVParticipant) => void;
@@ -23,7 +29,11 @@ export class AVAdapter extends TypedEmitter<AVAdapterEvents> {
     this.origin = origin;
   }
 
-  connect({ roomId, displayName, userId, produceAudio, produceVideo }) {}
+  async connect(
+    localAudioTrackStore: TrackStore,
+    localVideoTrackStore: TrackStore,
+    options: ConnectOptions
+  ) {}
 
   enableMic() {}
   disableMic(pause: boolean = false) {}
