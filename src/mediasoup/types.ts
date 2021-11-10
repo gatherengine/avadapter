@@ -1,7 +1,6 @@
 import type { Device } from "mediasoup-client";
 import type { RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import type { ProtooResponse } from "protoo-client";
-import type { TrackStore } from '../types';
 
 export type ProducerState = "closed" | "open" | "paused" | "error";
 

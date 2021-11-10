@@ -9,10 +9,11 @@ import {
   RemoteVideoTrack,
 } from "twilio-video";
 import type { Room, ConnectOptions } from "twilio-video";
-import { AVAdapter } from "../AVAdapter";
+import { ClientAVAdapter } from "../base/ClientAVAdapter";
 import { get } from "svelte/store";
 
-export class TwilioAVAdapter extends AVAdapter {
+// https://www.twilio.com/docs/video
+export class TwilioClientAVAdapter extends ClientAVAdapter {
   room: Room;
 
   async connect(

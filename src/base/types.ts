@@ -47,3 +47,13 @@ interface Writable<T> extends Readable<T> {
 }
 
 export type TrackStore = Writable<MediaStreamTrack>;
+
+export type BandwidthEstimate = {
+  desired: number;
+  actual: number;
+};
+
+/** Server Types */
+
+export type Identity = string;
+export type PermissionPredicate = (id: Identity) => boolean;

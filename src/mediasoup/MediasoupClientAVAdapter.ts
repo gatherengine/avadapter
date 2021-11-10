@@ -1,10 +1,10 @@
-import { AVAdapter } from "../AVAdapter";
-import { TrackStore } from "../types";
+import { ClientAVAdapter } from "../base/ClientAVAdapter";
+import { TrackStore } from "../base/types";
 
 import { RoomClient } from "./RoomClient";
 import type { BandwidthEstimate, MSPeer } from "./types";
 
-export class MediaSoupAVAdapter extends AVAdapter {
+export class MediasoupClientAVAdapter extends ClientAVAdapter {
   room: RoomClient;
 
   async connect(

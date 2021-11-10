@@ -17,7 +17,7 @@ import { dispatchNotification, dispatchRequest } from "./dispatch";
 import * as sendTransportHandler from "./SendTransportHandler";
 import * as recvTransportHandler from "./RecvTransportHandler";
 import type { RequestAcceptFunction, RequestRejectFunction } from "./types";
-import { TrackStore } from "../types";
+import { TrackStore } from "../base/types";
 
 const logger = new Logger("ConferencePeer");
 

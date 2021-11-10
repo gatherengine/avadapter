@@ -1,11 +1,11 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import type { BandwidthEstimate, MSPeer } from "./mediasoup/types";
 import type {
   AVParticipant,
   AVResource,
   ConnectOptions,
   ConnectStatus,
   TrackStore,
+  BandwidthEstimate,
 } from "./types";
 
 interface AVAdapterEvents {
@@ -21,7 +21,7 @@ interface AVAdapterEvents {
   "status-updated": (status: ConnectStatus) => void;
 }
 
-export class AVAdapter extends TypedEmitter<AVAdapterEvents> {
+export class ClientAVAdapter extends TypedEmitter<AVAdapterEvents> {
   origin: string;
 
   constructor({ origin }) {
@@ -44,30 +44,3 @@ export class AVAdapter extends TypedEmitter<AVAdapterEvents> {
   enableShare() {}
   disableShare(pause: boolean = false) {}
 }
-
-// https://www.twilio.com/docs/video
-// class TwilioAVAdapter extends AVAdapter {
-//   constructor() {
-//     super();
-//     this.on("twilioParticipantAdded", (twilioParticipant) => {
-//       const peer: RelmAVPeer =
-//         this.twilioParticipantToRelmPeer(twilioParticipant);
-//       this.emit("peer-added", peer);
-//     });
-
-//     this.on("twilioAdjustDownlinkReport", (report) => {
-//       this.emit("peer-updated", peer);
-//     });
-//   }
-
-//   connect({ roomId, displayName, userId, produceAudio, produceVideo }) {}
-
-//   enableMic() {}
-//   disableMic(pause: boolean = false) {}
-
-//   enableCam() {}
-//   disableCam(pause: boolean = false) {}
-
-//   enableShare() {}
-//   disableShare(pause: boolean = false) {}
-// }
